@@ -1,0 +1,22 @@
+<h1 class="text-center mb-3">{{title}}</h1>
+<h2 class="text-center mb-2">The Basics</h2>
+The goal of odometry is to be able to use sensors (in this case, “dead wheel encoders”) to determine the robot’s position on the field.<br>
+This demonstration will be based on a 3-wheel encoding methodology, where two wheels will be on the left and right sides and the third 
+wheel will be perpendicular to these along the back of the robot.<br>
+To begin, we are going to assume that the dead wheels are on the same circle as the wheels--and that everything is a "point"<br>
+
+<form action="/api/odometry" method="POST" class="mb-4">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control">
+        <select class="wheel1" id="wheel1" onchange="insertOptions('wheel1','wheel2')">
+            <option value="..">..</option>
+            <option value="One">One</option>
+            <option value="Two">Two</option>
+        </select>
+        <select class="wheel2" id="wheel2">
+            <option value="..">..</option>
+        </select>
+    </div>
+    <input type="submit" value="Calculate" class="btn btn-primary btn-block">
+</form>
