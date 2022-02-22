@@ -12,6 +12,7 @@ const app = express();
 //app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.engine('handlebars', engine({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+app.use(express.static("public/images"))
 
 //Body Parser Middleware
 app.use(express.json());

@@ -1,9 +1,54 @@
 <h1 class="text-center mb-3">{{title}}</h1>
 <h2 class="text-center mb-2">The Basics</h2>
+Odometry is an algorithm via which you can determine where you are in 2 dimensional space (XY), independently from using the drive wheels.
+This is important because you want to know where you are even if your drive wheels slip--you can hit a slippery spot or run into a wall 
+where the drive wheels keep going but the robot does not move.  In these cases, you want to still be able to measure where you are.<br>
 The goal of odometry is to be able to use sensors (in this case, “dead wheel encoders”) to determine the robot’s position on the field.<br>
 This demonstration will be based on a 3-wheel encoding methodology, where two wheels will be on the left and right sides and the third 
 wheel will be perpendicular to these along the back of the robot.<br>
-To begin, we are going to assume that the dead wheels are on the same circle as the wheels--and that everything is a "point"<br>
+This discussion also assumes that the wheels are mecanum wheels, supporting drive, rotate and strafe.<br>
+To begin, we are going to assume that the dead wheels are on the same circle as the wheels.<br>
+<h3 class="text-center mb-1">Motion</h3>
+Mecanum wheels are special because they give you three directions of movement instead of the standard two.<br>
+<h4 class="text-center mb-0">Forward and Backward</h4>
+When all wheels are rotated in the same direction, then the robot will move either forward or backward:<br>
+<img src="ForwardBackward.jpg" alt="Forward and Backward" height="800">
+<h4 class="text-center mb-0">Rotation</h4>
+When the wheels on one side rotate in a different direction from the wheels on the other, the robot will rotate--either clockwise (CW) or
+counterclockwise (CCW)<br>
+<img src="Rotate.jpg" alt="Rotate" height="400">
+<h4 class="text-center mb-0">Strafing</h4>
+When the wheels on each side rotate in opposite directions from each other, the robot will strafe right or left<br>
+<img src="Strafe.jpg" alt="Strafe" height="400">
+<h3 class="text-center mb-1">Dead Wheel Encoders</h3>
+There are multiple ways to design and position dead wheel encoders.  One of the more common ways is to use three dead wheels, located on the
+left and right sides as well as the back of the robot, as shown in the diagram. <br>
+<bold>INSERT PIC OF DEAD WHEEL POSITIONING</bold>
+The dead wheels themselves are often a small omni wheel attached to a rotary encoder.  When the wheel spins on the axis of rotation for the
+encoder, then the encoder counts.  When it does not, there are no counts.  With just these three wheels, you can measure all directions of
+motion and even discern when you're doing all three at the same time.<br>
+
+<h2 class="text-center mb-2">Encoder Calculations</h2>
+To use the dead wheel encoders, one of the first things you need to do is understand how many counts of the rotary encoder occur in a given
+distance.  Rotary encoders are simple devices that have a wheel that passes between a light and a photo sensor
+(see <a href="https://en.wikipedia.org/wiki/Rotary_encoder">Wikipedia</a> for more information).  They are typically specified in terms of the
+number of counts in each rotation.  To calculate the counts over a distance, you need to know the circumference of your wheel and the number
+of counts in your encoder:<br>
+<br>
+<form class="mb-4">
+    <div class="form-group">
+        <label>Units</label>
+        <input type="radio" id="mm" name="wheelUnits" value="mm" onchange="addUnits()">
+        <label for="mm">mm</label>
+        <input type="radio" id="inch" name="wheelUnits" value="in" checked onchange="addUnits()">
+        <label for="inch">inch</label>
+    </div>
+    <div class="form-group">
+        <label for="deadWheelDiameter">Wheel Diameter</label>
+        <input type="number" placeholder="1.00" step="0.01" id="deadWheelDiameter" name="deadWheelDiameter">
+        <p id="units">in</p>
+    </div>
+</form>
 
 <form action="/api/odometry" method="POST" class="mb-4">
     <div class="form-group">
@@ -20,3 +65,49 @@ To begin, we are going to assume that the dead wheels are on the same circle as 
     </div>
     <input type="submit" value="Calculate" class="btn btn-primary btn-block">
 </form>
+
+<script type="text/javascript">
+    function addUnits(units) {
+        var getSelectedValue = document.querySelector(
+            'input[name="wheelUnits"]:checked');
+        if(getSelectedValue != null) {
+            document.getElementById("units").innerHTML = getSelectedValue.value;
+        }
+    }
+    function removeAll(wheel2) {
+        for (var i = wheel2.options.length - 1; i >= 0; i--) {
+            wheel2.remove(i);
+        }
+    }
+    function insertOptions(wheel1,wheel2) {
+        var wheel1 = document.getElementById('wheel1');
+        var wheel2 = document.getElementById('wheel2');
+        if(wheel1.options[wheel1.selectedIndex].value == "One") {
+            var opt1 = document.createElement('option');
+            var opt2 = document.createElement('option');
+            opt1.value = "Left";
+            opt2.value = "Right";
+            opt1.innerHTML = "Left";
+            opt2.innerHTML = "Right";
+            removeAll(wheel2);
+            wheel2.options.add(opt1);
+            wheel2.options.add(opt2);
+        } else if (wheel1.options[wheel1.selectedIndex].value == "Two") {
+            var opt1 = document.createElement('option');
+            var opt2 = document.createElement('option');
+            opt1.value = "Up";
+            opt2.value = "Down";
+            opt1.innerHTML = "Up";
+            opt2.innerHTML = "Down";
+            removeAll(wheel2);
+            wheel2.options.add(opt1);
+            wheel2.options.add(opt2);
+        } else {
+            var opt1 = document.createElement('option');
+            opt1.value = "..";
+            opt1.innerHTML = "..";
+            removeAll(wheel2);
+            wheel2.options.add(opt1);
+        }
+    }
+</script>
