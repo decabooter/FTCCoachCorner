@@ -36,6 +36,7 @@ number of counts in each rotation.  To calculate the counts over a distance, you
 of counts in your encoder:<br>
 <br>
 <form class="mb-4">
+    <h3 class="text-center mb-1">Distance Per Count</h3>
     <div class="form-group">
         <label>Units</label>
         <input type="radio" id="mm" name="wheelUnits" value="mm" onchange="encoderCalc()">
@@ -59,7 +60,28 @@ of counts in your encoder:<br>
         <label id="DPCUnits">in per count</label>
         </b>
     </div>
+    <h3 class="text-center mb-1">Counts Per Distance</h3>
+    <em>(Insert calculations for number of counts for an inputted distance here)</em>
+    <h3 class="text-center mb-1">Error Per Count</h3>
+    One of the things we need to consider throughout our work is how much error our system has.  Unlike website and app design, physical systems
+    like robots aren't exact.  They have a variety of sources of error.  You see it with the wiggliness of various subsystems (like your wheels)
+    and we see it with sensors like encoders.<br>
+    In the case of an encoder, the error happens in between the steps.  Think of it like rounding:  when you round a number, you are basically
+    accepting that you're going to get +/- half of whatever digit you're rounding to.  If I round to two digits, 2.955 is essentially the same 
+    as 2.964:  they both round to 2.96.<br>
+    With encoders, this "rounding" occurs with between counts.  The inherent error is approximately +/- 0.5 counts:<br>
+    <div class="form-group">
+        <b>
+            <label for="countError">Encoder Error: +/-</label>
+            <output id="countError" name="countError">TBD</output>
+            <label id="DPCUnits2">in per count</label>
+        </b>
+    </div>
+    Note that this is a fixed error--no matter how far you move in one move, this is the inherent accuracy of that move.  Note, though, that 
+    you accumulate this error with each move.  This is why, the longer you drive, the more uncertainty you accumulate.  We'll talk about how
+    you accumulate this error in a future step. <em>(link to discussion of mean squared error calculation)</em><br>
 </form>
+
 
 <form action="/api/odometry" method="POST" class="mb-4">
     <div class="form-group">
@@ -87,7 +109,9 @@ of counts in your encoder:<br>
         if(getSelectedValue != null) {
             document.getElementById("units").innerHTML = getSelectedValue.value;
             document.getElementById("DPCUnits").innerHTML = getSelectedValue.value + " per count";
+            document.getElementById("DPCUnits2").innerHTML = getSelectedValue.value + " per count";
             document.getElementById("distPerCount").value = rawDistPerCount.toFixed(5);
+            document.getElementById("countError").value = (rawDistPerCount/2).toFixed(5);
         }
     }
     function removeAll(wheel2) {
