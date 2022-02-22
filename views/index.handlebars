@@ -38,15 +38,26 @@ of counts in your encoder:<br>
 <form class="mb-4">
     <div class="form-group">
         <label>Units</label>
-        <input type="radio" id="mm" name="wheelUnits" value="mm" onchange="addUnits()">
+        <input type="radio" id="mm" name="wheelUnits" value="mm" onchange="encoderCalc()">
         <label for="mm">mm</label>
-        <input type="radio" id="inch" name="wheelUnits" value="in" checked onchange="addUnits()">
+        <input type="radio" id="inch" name="wheelUnits" value="in" checked onchange="encoderCalc()">
         <label for="inch">inch</label>
     </div>
     <div class="form-group">
         <label for="deadWheelDiameter">Wheel Diameter</label>
-        <input type="number" placeholder="1.00" step="0.01" id="deadWheelDiameter" name="deadWheelDiameter">
-        <p id="units">in</p>
+        <input type="number" placeholder="1.00" step="0.01" id="deadWheelDiameter" name="deadWheelDiameter" onchange="encoderCalc()">
+        <label id="units">in</label>
+    </div>
+    <div class="form-group">
+        <label for="encoderCounts">Encoder Counts</label>
+        <input type="number" id="encoderCounts" name="encoderCounts" onchange="encoderCalc()">
+    </div>
+    <div class="form-group">
+        <b>
+        <label for="distPerCount">Distance per Encoder Count</label>
+        <output id="distPerCount" name="distPerCount">TBD</output>
+        <label id="DPCUnits">in per count</label>
+        </b>
     </div>
 </form>
 
@@ -67,11 +78,16 @@ of counts in your encoder:<br>
 </form>
 
 <script type="text/javascript">
-    function addUnits(units) {
+    function encoderCalc(units) {
         var getSelectedValue = document.querySelector(
             'input[name="wheelUnits"]:checked');
+        var rawDistPerCount = 
+                document.getElementById("deadWheelDiameter").value * 3.1415926 / 
+                document.getElementById("encoderCounts").value;
         if(getSelectedValue != null) {
             document.getElementById("units").innerHTML = getSelectedValue.value;
+            document.getElementById("DPCUnits").innerHTML = getSelectedValue.value + " per count";
+            document.getElementById("distPerCount").value = rawDistPerCount.toFixed(5);
         }
     }
     function removeAll(wheel2) {
