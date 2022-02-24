@@ -90,74 +90,28 @@ of counts in your encoder:<br>
     you accumulate this error in a future step. <em>(link to discussion of mean squared error calculation)</em><br>
 </form>
 
-<h2 class="text-center mb-2">Simple Motion</h2>
-Alright...so we now understand the basics of how the encoders work.  With this, we can start considering how the encoders work when the robot
-is moving.<br>
-To begin with, we will assume that each of the encoders is equidistant from the center of the robot--one on the left side, one on the right side
-and one on the back.  
-<form>
+
+<form action="/api/odometry" method="POST" class="mb-4">
     <div class="form-group">
-        <label for="distanceFromCenter">Distance Traveled</label>
-        <input type="number" step="0.01" id="distanceFromCenter" name="distanceFromCenter" onchange="simpleMotion()">
-        <label id="units4">in</label>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control">
+        <select class="wheel1" id="wheel1" onchange="insertOptions('wheel1','wheel2')">
+            <option value="..">..</option>
+            <option value="One">One</option>
+            <option value="Two">Two</option>
+        </select>
+        <select class="wheel2" id="wheel2">
+            <option value="..">..</option>
+        </select>
     </div>
+    <input type="submit" value="Calculate" class="btn btn-primary btn-block">
 </form>
-<div id="encoderPositions" style="width:800px;height:800px"></div>
-
-<script>
-    var distLeft;
-    var distRight;
-    var distRear;
-
-    function simpleMotion () {
-        var dist = document.getElementById("distanceFromCenter").value;
-        distLeft = dist;
-        distRight = dist;
-        distRear = dist;
-        var encoderPositionPlot = [
-        {
-            type: "scatterpolar",
-            mode: "markers",
-            r: [distLeft, distRear, distRight],
-            theta: [90,180,270],
-            marker: {
-                color: "#8090c7",
-                symbol: "square",
-                size: 12
-            },
-            subplot: "polar"
-        }]
-        var encoderPositionLayout = {
-            showlegend: false,
-            polar: {
-                domain: {
-                    x: [0,1],
-                    y: [0,1]
-                },
-                radialaxis: {
-                    tickfont: {
-                        size: 8
-                    }
-                },
-                angularaxis: {
-                    tickfont: {
-                        size: 8
-                    },
-                    direction: "counterclockwise",
-                    rotation: 90
-                }
-            }
-        }
-        Plotly.newPlot("encoderPositions",encoderPositionPlot,encoderPositionLayout)
-    }
-</script>
 
 <script type="text/javascript">
-    var rawDistPerCount;
     function encoderCalc(units) {
         var getSelectedValue = document.querySelector(
             'input[name="wheelUnits"]:checked');
-        rawDistPerCount = 
+        var rawDistPerCount = 
                 document.getElementById("deadWheelDiameter").value * Math.PI / 
                 document.getElementById("encoderCounts").value;
         var rawDistCounts =
@@ -166,11 +120,46 @@ and one on the back.
             document.getElementById("units").innerHTML = getSelectedValue.value;
             document.getElementById("units2").innerHTML = getSelectedValue.value;
             document.getElementById("units3").innerHTML = getSelectedValue.value;
-            document.getElementById("units4").innerHTML = getSelectedValue.value;
             document.getElementById("DPCUnits").innerHTML = getSelectedValue.value + " per count";
             document.getElementById("distPerCount").value = rawDistPerCount.toFixed(5);
             document.getElementById("distCounts").value = rawDistCounts.toFixed(0);
             document.getElementById("countError").value = (rawDistPerCount/2).toFixed(5);
+        }
+    }
+    function removeAll(wheel2) {
+        for (var i = wheel2.options.length - 1; i >= 0; i--) {
+            wheel2.remove(i);
+        }
+    }
+    function insertOptions(wheel1,wheel2) {
+        var wheel1 = document.getElementById('wheel1');
+        var wheel2 = document.getElementById('wheel2');
+        if(wheel1.options[wheel1.selectedIndex].value == "One") {
+            var opt1 = document.createElement('option');
+            var opt2 = document.createElement('option');
+            opt1.value = "Left";
+            opt2.value = "Right";
+            opt1.innerHTML = "Left";
+            opt2.innerHTML = "Right";
+            removeAll(wheel2);
+            wheel2.options.add(opt1);
+            wheel2.options.add(opt2);
+        } else if (wheel1.options[wheel1.selectedIndex].value == "Two") {
+            var opt1 = document.createElement('option');
+            var opt2 = document.createElement('option');
+            opt1.value = "Up";
+            opt2.value = "Down";
+            opt1.innerHTML = "Up";
+            opt2.innerHTML = "Down";
+            removeAll(wheel2);
+            wheel2.options.add(opt1);
+            wheel2.options.add(opt2);
+        } else {
+            var opt1 = document.createElement('option');
+            opt1.value = "..";
+            opt1.innerHTML = "..";
+            removeAll(wheel2);
+            wheel2.options.add(opt1);
         }
     }
 </script>
