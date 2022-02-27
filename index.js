@@ -25,6 +25,9 @@ app.use(express.urlencoded({extended: false}))
 app.get('/', (req, res) => res.render('index', {
     title: 'Odometry'
 }));
+app.get('/scratchpad', (req, res) => res.render('scratchpad', {
+    title: 'Scratchpad'
+}));
 
 const { application } = require('express');
 
